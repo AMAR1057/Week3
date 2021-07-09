@@ -1,87 +1,53 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
-using System.Text;
+namespace DriverLicence{
+class Program{
+    static void Main(string[] args){
 
-namespace DriverLicence
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            //Array that holds the correct answers
-            string[] correctAnswers = new string[] { "B", "D", "A", "A", "C", "A", "B", "A", "C", "D", "B", "C", "D", "A", "D", "C", "C", "B", "D", "A" };
-            string[] userAnswers = new string[20];
-
+        //Store answers in an array
+        char[] answers = new char[]{'B','D','A','A','C','A','B','A','C','D','B','C','D','A','D','C','C','B','D','A'};
+        //Required variables
+        char[] studentAnswers = new char[20];
+        List<int> incorrectQtsns = new List<int>();
+        int correctAnswers = 0,wrongAnswers = 0;
+        //Open file using StreamReader
+         using (StreamReader reader = new StreamReader(@"C:\testResults.txt")){
+            String line;
             int i = 0;
-
-            //File stream object
-            FileStream fileStream = new FileStream(@"C:\testResults.txt", FileMode.Open, FileAccess.Read);
-
-            //Reading data from file
-            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-            {
-                string line;
-
-                //Itertate till all lines are processed
-                while ((line = streamReader.ReadLine()) != null)
-                {
-                    //Storing user answer
-                    userAnswers[i] = line;
-
-                    //Incrementing index
-                    i = i + 1;
-                }
+            //Loop through each line of file
+            while((line = reader.ReadLine()) != null){
+                //Convert line to char and store it in array
+                studentAnswers[i] = Convert.ToChar(line);
+                //Count correct and wrong answers
+                //and store question number of wrong answers
+                if (studentAnswers[i] == answers[i])
+                    correctAnswers++;
+                else{
+                    wrongAnswers++;
+                    incorrectQtsns.Add(i + 1);
+                 }
+                i++;                             
             }
-
-            int correctAnswerCnt = 0, inCorrectAnswerCnt = 0;
-
-            //List to hold incorrect answers
-            List<int> incorrectAnswers = new List<int>();
-
-            //Iterating over each answer
-            for (i = 0; i < 20; i++)
-            {
-                //Comparing answers
-                if (userAnswers[i].Equals(correctAnswers[i]))
-                {
-                    //Updating counters
-                    correctAnswerCnt += 1;
-                }
-                else
-                {
-                    //Updating counters
-                    inCorrectAnswerCnt += 1;
-
-                    //Adding to list
-                    incorrectAnswers.Add(i + 1);
-                }
-            }
-
-            //Prnting results
-            if (correctAnswerCnt >= 15)
-            {
-                Console.WriteLine("\n Test Result: Pass \n");
-            }
-            else
-            {
-                Console.WriteLine("\n Test Result: Fail \n");
-            }
-
-            //Printing counts
-            Console.WriteLine("\n Total Number of correct answers: " + correctAnswerCnt.ToString());
-            Console.WriteLine("\n Total Number of incorrect answers: " + inCorrectAnswerCnt.ToString());
-
-            Console.WriteLine("\n\n Question numbers of the incorrectly answered questions: \n");
-
-            //Printing incorrect answers line numbers
-            for (i = 0; i < incorrectAnswers.Count; i++)
-            {
-                Console.Write(" " + incorrectAnswers[i]);
-            }
-
-            Console.ReadKey();
         }
-    }
-}
+        //Display results
+        if (correctAnswers >= 15){
+            Console.WriteLine("Test Result: Pass \n");
+        }
+        else{
+            Console.WriteLine("Test Result: Fail \n");
+        }
+
+        //Printing counts
+        Console.WriteLine("\nTotal Number of correct answers: " + correctAnswers.ToString());
+        Console.WriteLine("\nTotal Number of incorrect answers: " + wrongAnswers.ToString());
+        Console.WriteLine("\n\nQuestion numbers of the incorrectly answered questions:\n");
+
+        //Printing incorrect answers line numbers
+        foreach (int qstNumber in incorrectQtsns){
+            Console.Write(" " + qstNumber);
+        }
+        Console.ReadKey();
+    }                 
+}}
